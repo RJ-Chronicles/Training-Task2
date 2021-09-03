@@ -1,0 +1,116 @@
+import java.util.*;
+public class MyClass {
+    public static void main(String args[]) {
+        Scanner in = new Scanner(System.in);
+        //System.out.print("Enter How many records you want to insert:  ");
+        int size = in.nextInt();
+        String[][] arr = new String[size][9];
+        List<String> CompnyTotal = new ArrayList<String>();
+        Hashtable<String, Hashtable<String,Hashtable<String, List<String>>>> dictionary = new Hashtable<String, Hashtable<String,Hashtable<String, List<String>>>>();
+        // input records
+
+        for(int i= 0; i< size; i++){
+            String[] str = in.next().split(",");
+            for(int j = 0; j< 9; j++){
+                arr[i][j] = str[j];
+            }
+        }
+        //Display entered data.
+       /* System.out.print("Details you entered as follow :         \n\n\n");
+        for(int i = 0; i< size;i++){
+            for(int j= 0; j< 9; j++){
+                System.out.print(arr[i][j]+"\t");
+            }
+            System.out.println();
+        }*/
+        // Logic to find required fields
+        for(int i = 0; i< size;i++){
+            List<String> values = new ArrayList<String>();
+            Hashtable<String,List<String>> inner= new Hashtable<String,List<String>>();
+            Hashtable<String,Hashtable<String,List<String>>> outer= new Hashtable<String,Hashtable<String,List<String>>>();
+            if (! dictionary.containsKey(arr[i][1])){
+
+                Collections.addAll(values,"1",arr[i][6], arr[i][7],arr[i][8]);
+                inner.put(arr[i][0], values);
+                outer.put(arr[i][2], inner);
+                dictionary.put(arr[i][1], outer);
+            }else{
+                if(!dictionary.get(arr[i][1]).containsKey(arr[i][2])){
+                    outer = dictionary.get(arr[i][1]);
+
+                    Collections.addAll(values,"1",arr[i][6], arr[i][7],arr[i][8]);
+                    inner.put(arr[i][0], values);
+                    outer.put(arr[i][2], inner);
+                    dictionary.put(arr[i][1], outer);
+                }else{
+                    if(!dictionary.get(arr[i][1]).get(arr[i][2]).containsKey(arr[i][0])){
+                        outer = dictionary.get(arr[i][1]);
+                        inner = dictionary.get(arr[i][1]).get(arr[i][2]);
+
+                        Collections.addAll(values,"1",arr[i][6], arr[i][7],arr[i][8]);
+                        inner.put(arr[i][0], values);
+                        outer.put(arr[i][2], inner);
+                        dictionary.put(arr[i][1], outer);
+                    }else{
+
+                        outer = dictionary.get(arr[i][1]);
+                        inner = dictionary.get(arr[i][1]).get(arr[i][2]);
+                        values= dictionary.get(arr[i][1]).get(arr[i][2]).get(arr[i][0]);
+                        int sum = Integer.parseInt(values.get(1)) + Integer.parseInt(arr[i][6]);
+                        int count = Integer.parseInt(values.get(0))+ 1;
+                        values.set(0, String.valueOf(count));
+                        values.set(1, String.valueOf(sum));
+                    }
+                }
+
+            }
+        }
+        // Print the final Output
+        Set<String> keys = dictionary.keySet();
+        int total = 0;
+        int req = 0;
+        for(String key: keys){
+            System.out.println("Company :  "+key);
+            Set<String> outer = dictionary.get(key).keySet();
+            for(String out: outer){
+                System.out.println("Branch : "+ out);
+                Set<String> inner = dictionary.get(key).get(out).keySet();
+                for(String inn: inner){
+                    System.out.println("OrderNumber    :  "+inn +" Order Details   : "+dictionary.get(key).get(out).get(inn));
+                    total += Integer.parseInt(dictionary.get(key).get(out).get(inn).get(1));
+                    req  += Integer.parseInt(dictionary.get(key).get(out).get(inn).get(0));
+                }
+                System.out.println("------------------------------");
+                System.out.println("|   total Cost     :   "+total+"   ");
+                System.out.println("|   total Request  :   "+req+"     ");
+                System.out.println("------------------------------");
+                total = 0;
+                req = 0;
+                System.out.println("");
+            }
+            System.out.println("-----------------------------------------------------------------------------------------------");
+        }
+    }
+}
+
+
+
+16
+1234567890,1,IND01,210,10,1000,10000,01-09-2021,28-09-2021
+1234567890,1,IND01,220,5,2500,12500,01-09-2021,28-09-2021
+1234567890,1,IND01,230,26,1000,26000,01-09-2021,28-09-2021
+1234567890,1,IND01,240,20,6985,139700,01-09-2021,28-09-2021
+1234567890,1,IND01,250,18,500,9000,01-09-2021,28-09-2021
+1234567890,1,IND01,260,7,400,2800,01-09-2021,28-09-2021
+1234567891,2,CHN01,810,10,10000,100000,01-09-2021,27-09-2021
+1234567891,2,CHN01,779,15,10000,150000,01-09-2021,27-09-2021
+1234567892,1,IND02,210,100,10000,1000000,01-09-2021,27-09-2021
+1234567892,1,IND02,220,260,200,52000,01-09-2021,27-09-2021
+1234567892,1,IND02,260,80,599,47920,01-09-2021,27-09-2021
+1234567893,1,IND01,620,30,900,27000,01-09-2021,10-09-2021
+1234567893,1,IND01,621,80,599,47920,01-09-2021,10-09-2021
+1234567893,1,IND01,678,20,400,8000,01-09-2021,10-09-2021
+1234567893,1,IND01,868,64,600,38400,01-09-2021,10-09-2021
+1234567893,1,IND01,9652,50,600,30000,01-09-2021,10-09-2021
+
+
